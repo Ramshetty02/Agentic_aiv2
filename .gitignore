@@ -1,4 +1,10 @@
 .env
 __pycache__/
 *.pyc
-
+.pytest_cache/
+.venv/
+database/
+logs/
+*.db
+.cache/
+models/

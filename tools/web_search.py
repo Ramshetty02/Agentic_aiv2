@@ -1,21 +1,23 @@
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import quote_plus
+from duckduckgo_search import DDGS
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; ResearchBot/1.0)"}
 
-def search_web(query: str) -> str:
-    """Search DuckDuckGo and return HTML for link extraction."""
-    url = f"https://duckduckgo.com/html/?q={quote_plus(query)}"
+
+def search_web(query: str, max_results: int = 5) -> list[dict]:
+    """Search DuckDuckGo and return structured results."""
     try:
-        resp = requests.get(url, headers=HEADERS, timeout=10)
-        resp.raise_for_status()
-        return resp.text
-    except requests.RequestException as e:
-        return f"Search failed: {e}"
+        with DDGS() as ddgs:
+            return list(ddgs.text(query, max_results=max_results))
+    except Exception as e:
+        return [{"title": "Search failed", "href": "", "body": str(e)}]
+
 
 def scrape_page(url: str, max_chars: int = 3000) -> str:
     """Scrape and clean text content from a URL."""
+    if not url:
+        return ""
     try:
         resp = requests.get(url, headers=HEADERS, timeout=8)
         resp.raise_for_status()

@@ -1,59 +1,82 @@
-# 🤖 Agentic AI Research Assistant v2.0
+# Agentic AI Research Assistant v2
 
-> A production-grade **multi-agent AI pipeline** that autonomously plans, searches, analyses, and reports on any research topic — with semantic memory across sessions.
+> A modular **research pipeline** with LangChain, structured planning (Pydantic), multi-source web search, and semantic session memory — exploring agentic AI patterns.
+
+[![CI](https://github.com/Ramshetty02/Agentic_aiv2/actions/workflows/ci.yml/badge.svg)](https://github.com/Ramshetty02/Agentic_aiv2/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+## Live Demo
+
+Deploy to [Streamlit Community Cloud](https://share.streamlit.io/) in one click:
+
+1. Fork this repo
+2. Go to [share.streamlit.io](https://share.streamlit.io/) → **New app**
+3. Set **Main file path** to `app.py`
+4. Add `OPENAI_API_KEY` under **Secrets**
+5. Deploy
+
+Or run locally ( **no API key required** — Demo Mode works out of the box):
+
+```bash
+git clone https://github.com/Ramshetty02/Agentic_aiv2.git
+cd Agentic_aiv2
+pip install -r requirements.txt
+cp .env.example .env
+streamlit run app.py
+```
+
+## AI Backend Options
+
+| Mode | Cost | Setup |
+|------|------|-------|
+| **Demo** (default) | Free | Leave `OPENAI_API_KEY` blank — uses templates + live web search |
+| **OpenAI** | Paid | Set `OPENAI_API_KEY` in `.env` |
+| **Ollama** | Free | Install [Ollama](https://ollama.com), run `ollama pull llama3.2`, set `OLLAMA_MODEL=llama3.2` in `.env` |
 
 ## Architecture
 
 ```
 User Query
     ↓
-Planner Agent  (LangChain + Pydantic structured output)
+Planner Agent   (LangChain + Pydantic structured output)
+    ↓  plan steps & key questions feed downstream agents
+Search Agent    (DuckDuckGo API + BeautifulSoup page scraper)
     ↓
-Search Agent   (DuckDuckGo + BeautifulSoup page scraper)
+Analyst Agent   (GPT-4o-mini, plan-aware analysis)
     ↓
-Analyst Agent  (GPT-4o-mini chain-of-thought analysis)
+Report Agent    (Structured markdown report)
     ↓
-Report Agent   (Structured markdown report generation)
-    ↓
-Memory Agent   (SQLite + SentenceTransformer cosine similarity)
+Memory Agent    (SQLite + SentenceTransformer cosine similarity)
 ```
 
 ## Features
 
-- **Structured Planning** — Pydantic-validated research plans via LangChain chains
-- **Multi-Source Search** — DuckDuckGo + page scraping with BeautifulSoup
-- **Deep Analysis** — Chain-of-thought prompting with GPT-4o-mini
-- **Semantic Memory** — SentenceTransformer embeddings + cosine similarity search
-- **Report Download** — Export reports as markdown files
-- **Run History** — Sidebar with past research sessions
-- **Agent Logger** — JSONL logs per run date
-
-## Quick Start
-
-```bash
-git clone https://github.com/yourusername/agentic-ai-research-assistant
-cd agentic-ai-research-assistant
-pip install -r requirements.txt
-cp .env.example .env  # Add OPENAI_API_KEY
-streamlit run app.py
-```
+- **Plan-driven research** — Search and analysis use the planner's key questions, not just the raw query
+- **Semantic memory** — Similar past sessions are detected via embeddings; choose cached report or fresh research
+- **Multi-source search** — DuckDuckGo results enriched with page scraping
+- **Structured outputs** — Pydantic-validated research plans via LangChain
+- **Report export** — Download results as markdown
+- **Run history** — Sidebar with past sessions
+- **JSONL logging** — Per-day agent run logs for debugging
 
 ## Project Structure
 
 ```
-├── app.py                     # Streamlit UI (wide layout, tabs, progress)
+├── app.py                     # Streamlit UI (pipeline orchestration)
 ├── agents/
-│   ├── planner_agent.py       # Pydantic structured plan
-│   ├── search_agent.py        # Multi-source search
-│   ├── analyst_agent.py       # LLM analysis chain
+│   ├── plan_schema.py         # Pydantic models (testable without API key)
+│   ├── planner_agent.py       # LangChain plan generation
+│   ├── search_agent.py        # Plan-driven multi-source search
+│   ├── analyst_agent.py       # Plan-aware LLM analysis
 │   ├── report_agent.py        # Report generation
-│   └── memory_agent.py        # Semantic memory (SQLite + BERT)
+│   └── memory_agent.py        # Semantic memory (SQLite + embeddings)
 ├── tools/
-│   └── web_search.py          # DDG + page scraper
+│   └── web_search.py          # DuckDuckGo + page scraper
 ├── utils/
 │   └── logger.py              # JSONL agent run logger
-├── database/                  # Auto-created SQLite DB
-└── logs/                      # Auto-created run logs
+├── tests/                     # pytest suite
+└── .github/workflows/ci.yml   # GitHub Actions CI
 ```
 
 ## Skills Demonstrated
@@ -62,10 +85,31 @@ streamlit run app.py
 |-------|-------|
 | Python + Type Hints | All agents |
 | LangChain Chains + Prompt Templates | planner, analyst, report agents |
-| Pydantic v2 Validation | planner_agent.py |
-| Multi-Agent Orchestration | app.py |
-| NLP Embeddings (Sentence-BERT) | memory_agent.py |
-| SQLite Persistence | memory_agent.py |
-| Web Scraping (BeautifulSoup) | search_agent.py, web_search.py |
-| Streamlit UI (wide, tabs) | app.py |
-| Error Handling + Logging | utils/logger.py, tools/ |
+| Pydantic v2 Validation | `planner_agent.py` |
+| Pipeline Orchestration | `app.py` |
+| NLP Embeddings (Sentence-BERT) | `memory_agent.py` |
+| SQLite Persistence | `memory_agent.py` |
+| Web Scraping (BeautifulSoup) | `search_agent.py`, `web_search.py` |
+| Streamlit UI | `app.py` |
+| Testing (pytest) | `tests/` |
+| CI/CD (GitHub Actions) | `.github/workflows/ci.yml` |
+
+## Testing
+
+```bash
+pytest tests/ -v
+```
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `OPENAI_API_KEY` | Yes | OpenAI API key for GPT-4o-mini |
+
+## Author
+
+**Ramshetty02** — [GitHub](https://github.com/Ramshetty02)
+
+## License
+
+MIT — see [LICENSE](LICENSE).

@@ -13,13 +13,21 @@ class MemoryAgent:
     Finds similar past research sessions via cosine similarity — no heavy vector DB needed.
     """
 
-    def __init__(self):
-        os.makedirs("database", exist_ok=True)
-        self.model = SentenceTransformer("all-MiniLM-L6-v2")
+    def __init__(self, db_path: str = DB_PATH, model_name: str = "all-MiniLM-L6-v2"):
+        self.db_path = db_path
+        self.model_name = model_name
+        self._model = None
+        os.makedirs(os.path.dirname(db_path) or ".", exist_ok=True)
         self._init_db()
 
+    @property
+    def model(self):
+        if self._model is None:
+            self._model = SentenceTransformer(self.model_name)
+        return self._model
+
     def _init_db(self):
-        with sqlite3.connect(DB_PATH) as conn:
+        with sqlite3.connect(self.db_path) as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS memory (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,7 +41,7 @@ class MemoryAgent:
     def save(self, task: str, report: str):
         """Save a research session with its embedding."""
         embedding = self.model.encode(task).tolist()
-        with sqlite3.connect(DB_PATH) as conn:
+        with sqlite3.connect(self.db_path) as conn:
             conn.execute(
                 "INSERT INTO memory (task, report, embedding) VALUES (?, ?, ?)",
                 (task, report, json.dumps(embedding))
@@ -42,7 +50,7 @@ class MemoryAgent:
     def get_similar(self, query: str, threshold: float = THRESHOLD):
         """Find semantically similar past research using cosine similarity."""
         q_emb = self.model.encode(query)
-        with sqlite3.connect(DB_PATH) as conn:
+        with sqlite3.connect(self.db_path) as conn:
             rows = conn.execute(
                 "SELECT task, report, embedding FROM memory ORDER BY created_at DESC LIMIT 50"
             ).fetchall()
