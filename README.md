@@ -1,8 +1,8 @@
-# Agentic AI Research Assistant v2
+# EREVNA
 
-> A modular **research pipeline** with LangChain, structured planning (Pydantic), multi-source web search, and semantic session memory — exploring agentic AI patterns.
+> An agentic research assistant with structured planning, web retrieval, grounded report generation, and semantic session memory.
 
-[![CI](https://github.com/Ramshetty02/Agentic_aiv2/actions/workflows/ci.yml/badge.svg)](https://github.com/Ramshetty02/Agentic_aiv2/actions/workflows/ci.yml)
+[![CI](https://github.com/ramshetty01/EREVNA/actions/workflows/ci.yml/badge.svg)](https://github.com/ramshetty01/EREVNA/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -19,8 +19,8 @@ Deploy to [Streamlit Community Cloud](https://share.streamlit.io/) in one click:
 Or run locally ( **no API key required** — Demo Mode works out of the box):
 
 ```bash
-git clone https://github.com/Ramshetty02/Agentic_aiv2.git
-cd Agentic_aiv2
+git clone https://github.com/ramshetty01/EREVNA.git
+cd EREVNA
 pip install -r requirements.txt
 cp .env.example .env
 streamlit run app.py
@@ -108,7 +108,7 @@ pytest tests/ -v
 
 ## Author
 
-**Ramshetty02** — [GitHub](https://github.com/Ramshetty02)
+**ramshetty01** — [GitHub](https://github.com/ramshetty01)
 
 ## License
 

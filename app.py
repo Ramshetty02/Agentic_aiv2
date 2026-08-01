@@ -20,7 +20,7 @@ from utils.ui import (
 )
 
 st.set_page_config(
-    page_title="Research Assistant",
+    page_title="EREVNA",
     page_icon="✦",
     layout="centered",
     initial_sidebar_state="collapsed",
