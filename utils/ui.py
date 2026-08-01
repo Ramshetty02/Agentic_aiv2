@@ -435,4 +435,4 @@ def render_sidebar(history: list, mode_label: str) -> None:
                     st.rerun()
 
         st.markdown("---")
-        st.caption("[GitHub](https://github.com/Ramshetty02/Agentic_aiv2)")
+        st.caption("[GitHub](https://github.com/ramshetty01/EREVNA)")
